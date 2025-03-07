@@ -1,0 +1,64 @@
+{
+  "name": "prismaql-cli",
+  "description": "CLI tool for managing and editing Prisma schema files using PrismaQL DSL.",
+  "version": "0.0.1-alpha.1",
+  "private": false,
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf output"
+  },
+  "exports": {
+    "import": "./output/esm/index.js",
+    "require": "./output/cjs/index.cjs"
+  },
+  "main": "./output/cjs/index.cjs",
+  "module": "./output/esm/index.js",
+  "types": "./output/esm/index.d.ts",
+  "bin": {
+    "prismaql": "./output/index.js"
+  },
+  "author": {
+    "name": "Artyom Gorlovetskiy",
+    "url": "https://github.com/unbywyd",
+    "email": "unbywyd@gmail.com"
+  },
+  "keywords": [
+    "prisma",
+    "prisma-cli",
+    "prismaql",
+    "dsl",
+    "schema-management",
+    "prisma-schema"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "boxen": "^8.0.1",
+    "chalk": "^5.4.1",
+    "inquirer": "^12.3.2",
+    "prismalux": "^0.1.3",
+    "prismaql": "github:unbywyd/prismaql#master"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.10",
+    "tsup": "^8.4.0",
+    "typescript": "^5.7.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unbywyd/prismaql-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/unbywyd/prismaql-cli/issues"
+  },
+  "homepage": "https://github.com/unbywyd/prismaql-cli#readme",
+  "files": [
+    "output/",
+    "README.md",
+    "LICENSE.md"
+  ]
+}
