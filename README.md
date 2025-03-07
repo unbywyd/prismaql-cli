@@ -1,113 +1,138 @@
-# PrismaQL - The Ultimate Prisma Schema Management Tool
+# PrismaQL CLI - Command-Line Interface for Prisma Schema Management
 
-[![npm version](https://img.shields.io/npm/v/prismaql?color=blue)](https://www.npmjs.com/package/prismaql)
-[![license](https://img.shields.io/npm/l/prismaql.svg)](LICENSE.md)
-[![GitHub issues](https://img.shields.io/github/issues/unbywyd/prismaql)](https://github.com/unbywyd/prismaql/issues)
-[![GitHub stars](https://img.shields.io/github/stars/unbywyd/prismaql?style=social)](https://github.com/unbywyd/prismaql)
+[![npm version](https://img.shields.io/npm/v/prismaql-cli?color=blue)](https://www.npmjs.com/package/prismaql-cli)
+[![license](https://img.shields.io/npm/l/prismaql-cli.svg)](LICENSE.md)
+[![GitHub issues](https://img.shields.io/github/issues/unbywyd/prismaql-cli)](https://github.com/unbywyd/prismaql-cli/issues)
+[![GitHub stars](https://img.shields.io/github/stars/unbywyd/prismaql-cli?style=social)](https://github.com/unbywyd/prismaql-cli)
 
 ## Introduction
 
-**PrismaQL** is a powerful tool for **programmatically managing and editing Prisma schema files** using a **SQL-like DSL**. It provides a structured and safe way to modify Prisma models, fields, relations, and enums while ensuring **schema integrity** through AST-based processing, validation, commit tracking, and automated backups.
+**PrismaQL CLI** is a command-line tool that leverages the **PrismaQL Core** engine to manage and edit **Prisma schemas** via a **SQL-like DSL**. It allows you to execute **query** and **mutation** commands directly in your terminal, enabling everything from listing models to creating complex relations.
 
-This tool was developed to solve the **problem of extending Prisma schema dynamically** when building Prisma-based servers. Managing plugins, schema modifications, and database migrations programmatically within the Prisma schema itself is now possible with PrismaQL.
+Key advantages:
 
-## Command Structure
+- **Structured DSL** – Easy-to-read and consistent command format.
+- **Safe & Reversible Changes** – Dry-run mode, automatic backups, and validation steps.
+- **Flexible** – Supports custom logic via the underlying PrismaQL Core engine.
 
-PrismaQL follows a structured pattern for commands:
+> **Alpha Notice:** This project is under active development. Expect changes to APIs and features.
 
+---
+
+## Installation
+
+Install globally using npm:
+
+```bash
+npm install -g prismaql-cli
 ```
-ACTION COMMAND ...ARGS ({PRISMA_BLOCK}) (OPTIONS)
+
+This will give you the `prismaql` command in your terminal.
+
+---
+
+## Basic Usage
+
+```bash
+prismaql <command> [--dry]
 ```
 
-### **Action Types**
+- **`<command>`** – A PrismaQL DSL command like `GET MODELS;`, `ADD FIELD name TO User ({String});`, etc.
+- **`--dry`** – (Optional) Performs a dry run without applying any changes to the schema.
 
-PrismaQL supports **two types of actions:**
+### Examples
 
-- **Query Actions (`GET`, `PRINT`, `VALIDATE`)** – Retrieve schema details without modifying the schema.
-- **Mutation Actions (`ADD`, `DELETE`, `UPDATE`)** – Modify the schema structure.
+```bash
+# Query all models
+prismaql "GET MODELS;"
 
-### **Arguments & Formatting**
+# Add a new field
+prismaql "ADD FIELD email TO User ({String @unique});"
 
-- **Comma-separated values** – `GET ENUMS enum1, enum2`
-- **Direct names** – `DELETE MODEL User`
-- **Pattern-based syntax** – `ADD RELATION ModelA TO ModelB`
-- **Prisma Block** – `{}` containing valid Prisma schema syntax, parsed using AST.
-- **Options** – `(key=value, key2=value2, boolFlag)` where boolean flags are `true` by default when present.
-
----
-
-## **Query Commands (`GET`, `PRINT`, `VALIDATE`)**
-
-| Command                                        | Description                                                                        |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------- |
-| **`GET MODELS`**                               | Displays all models with syntax highlighting.                                      |
-| **`GET MODEL <name>`**                         | Shows detailed information about a model, including relations and required fields. |
-| **`GET ENUM_RELATIONS <enum>`**                | Displays which tables reference the given enum.                                    |
-| **`GET FIELDS <model>`**                       | Lists all fields in the specified model.                                           |
-| **`GET FIELDS <field, field2> IN <model>`**    | Filters and displays specific fields within a model.                               |
-| **`GET RELATIONS <model, model2> (depth?=1)`** | Lists relations between models, supporting depth levels.                           |
-| **`GET ENUMS (raw?)`**                         | Lists all enums, optionally in raw format.                                         |
-| **`GET ENUMS <enum, enum>`**                   | Lists specific enums.                                                              |
-| **`GET MODELS_LIST`**                          | Displays all model names in a sorted table.                                        |
-| **`PRINT`**                                    | Prints the entire Prisma schema in a colorized format.                             |
-| **`VALIDATE`**                                 | Validates the schema for correctness.                                              |
+# Remove a model
+prismaql "DELETE MODEL TempData;"
+```
 
 ---
 
-## **Mutation Commands (`ADD`, `DELETE`, `UPDATE`)**
+## Supported Commands
 
-| Command                                                                                                                        | Description                                                             |
-| ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| **`ADD MODEL <name> ({...})`**                                                                                                 | Creates a new model with fields defined in a Prisma block.              |
-| **`ADD FIELD <name> TO <model> ({String})`**                                                                                   | Adds a new field to a model, requiring a valid Prisma field definition. |
-| **`ADD RELATION <modelA> TO <modelB> (type=1:1, pivotTable=true, fkHolder=<modelA>, required=true, relationName=CustomName)`** | Establishes a relation between two models with customizable options.    |
-| **`ADD ENUM <name> ({A, B, C})`**                                                                                              | Creates an enum with specified options.                                 |
-| **`DELETE MODEL <name>`**                                                                                                      | Deletes a model from the schema.                                        |
-| **`DELETE FIELD <name> IN <model>`**                                                                                           | Removes a field from a model.                                           |
-| **`DELETE RELATION <modelA>, <modelB> (fieldA=id, fieldB=refId, relationName=CustomName)`**                                    | Removes relations between models based on specified conditions.         |
-| **`DELETE ENUM <name>`**                                                                                                       | Deletes an enum.                                                        |
-| **`UPDATE FIELD <name> IN <model> ({...})`**                                                                                   | Recreates a field in a model (use with caution).                        |
-| **`UPDATE ENUM <name> ({A, B})(replace=true)`**                                                                                | Updates an enum, either appending values or replacing it completely.    |
+PrismaQL CLI supports the same **Query** and **Mutation** commands as the core library:
 
----
+### 1. Query Commands
 
-## Execution Flow
+- `GET MODELS` – List all models with highlighting.
+- `GET MODEL <name>` – Show details for a specific model (fields, relations, etc.).
+- `GET ENUM_RELATIONS <enum>` – Show references to a specific enum across models.
+- `GET FIELDS <model>` – List fields for a model.
+- `GET FIELDS <field,field2> IN <model>` – Show specific fields.
+- `GET RELATIONS <model,model2> (depth?=1)` – Display relations; optionally set a depth.
+- `GET ENUMS (raw?)` / `GET ENUMS <enum, ...>` – Show one or more enums.
+- `GET MODELS_LIST` – Display a sorted list of all models.
+- `PRINT` – Print the entire schema in color.
+- `VALIDATE` – Validate the schema.
 
-1. A raw DSL command is parsed through **`PrismaQlDslParser`**.
-2. The command is converted into an object:
-   ```ts
-   export interface PrismaQLParsedDSL<
-     A extends PrismaQlDSLAction,
-     C extends PrismaQLDSLCommand | undefined,
-     T extends PrismaQlDSLType
-   > {
-     action: A;
-     command?: C;
-     args?: PrismaQLDSLArgs<A, C>;
-     options?: PrismaQlDSLOptions<A, C>;
-     prismaBlock?: string;
-     raw: string;
-     type: T;
-   }
-   ```
-3. The parsed command is passed to the **PrismaQlProvider**.
-4. The provider manages execution through **handlers** registered in `PrismaQlHandlerRegistry`:
-   ```ts
-   mutationsHandler.register("ADD", "MODEL", addModel);
-   queryJSONHandler.register("GET", "MODEL", getJsonModel);
-   ```
-5. Mutations are executed with a **two-phase process**:
-   - **Dry Run** – Ensures changes do not break the schema.
-   - **Commit & Apply** – Saves changes after confirmation.
-6. A backup of the previous schema version is stored in `.prisma/backups`.
+### 2. Mutation Commands
+
+- `ADD MODEL <name> ({...})` – Create a new model with a Prisma block.
+- `ADD FIELD <name> TO <model> ({String})` – Add a field to a model.
+- `ADD RELATION <modelA> TO <modelB> (type=1:M, ...)` – Create a relation between two models.
+- `ADD ENUM <name> ({A|B|C})` – Create a new enum.
+- `DELETE MODEL <name>` – Delete a model.
+- `DELETE FIELD <name> IN <model>` – Remove a field.
+- `DELETE RELATION <modelA>, <modelB> (relationName=...)` – Remove a relation.
+- `DELETE ENUM <name>` – Delete an enum.
+- `UPDATE FIELD <name> IN <model> ({...})` – Recreate a field (caution).
+- `UPDATE ENUM <name> ({A|B}) (replace=?)` – Append or replace enum values.
+
+Each command follows the **`ACTION COMMAND ARGS (PRISMA_BLOCK) (OPTIONS)`** pattern.
 
 ---
 
-## Conclusion
+## Dry Run and Confirmation
 
-PrismaQL is a **powerful, structured, and extensible tool** for managing Prisma schemas programmatically. Whether you need to automate schema changes, manage dynamic plugins, or build custom Prisma integrations, PrismaQL provides the **best approach** to structured schema modifications.
+- **`--dry`** – When you append this flag, the command simulates changes but **does not** modify the schema. This is useful for verifying correctness.
+- **Confirmation Hooks** – If you integrate the CLI with a script, you can prompt users for confirmation after seeing the changes (the CLI provides a confirmation mechanism in interactive scenarios).
+
+---
+
+## Backup and Restore
+
+By default, whenever the CLI applies a **mutation**, it stores the previous schema version under `.prisma/backups`. This helps to:
+
+- **Rollback** if something breaks.
+- **Track** incremental changes over time.
+
+---
+
+## CLI Workflow
+
+1. **Prepare your Prisma schema** – Typically located in `prisma/schema.prisma`.
+2. **Issue commands** – Use DSL statements like `GET MODELS`, `ADD FIELD`, etc.
+3. **(Optional) Dry Run** – Evaluate changes with `--dry`.
+4. **Apply & Backup** – The CLI commits changes to the schema, backing up the old version.
+5. **Validate** – Run `VALIDATE` to ensure the schema remains consistent.
+
+---
+
+## Common Tips
+
+- **Always Validate** – Use `VALIDATE` after major changes.
+- **Use Dry Runs** – For complex changes, do a dry run first to ensure correctness.
+- **Look for .prisma/backups** – If something goes wrong, you can restore from backups.
+- **Combine Commands** – You can pass multiple statements separated by semicolons.
+
+---
+
+## Project Status
+
+- **Alpha Version** – Some features may be incomplete or subject to change.
+- **Contributions Welcome** – Please report issues and PRs on [GitHub](https://github.com/unbywyd/prismaql-cli).
+
+---
 
 ## License
 
-PrismaQL is licensed under the **MIT License**.
+PrismaQL CLI is licensed under the **MIT License**.
+
 © 2025 [Artyom Gorlovetskiy](https://unbywyd.com).
