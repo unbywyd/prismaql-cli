@@ -28,44 +28,48 @@ PrismaQL supports **two types of actions:**
 
 ### **Arguments & Formatting**
 
-Arguments in PrismaQL follow specific formats:
-
 - **Comma-separated values** – `GET ENUMS enum1, enum2`
 - **Direct names** – `DELETE MODEL User`
 - **Pattern-based syntax** – `ADD RELATION ModelA TO ModelB`
 - **Prisma Block** – `{}` containing valid Prisma schema syntax, parsed using AST.
 - **Options** – `(key=value, key2=value2, boolFlag)` where boolean flags are `true` by default when present.
 
-### **Query Commands (`GET`, `PRINT`, `VALIDATE`)**
+---
 
-| Command                                    | Description                                                                        |
-| ------------------------------------------ | ---------------------------------------------------------------------------------- |
-| `GET MODELS`                               | Displays all models with syntax highlighting.                                      |
-| `GET MODEL <name>`                         | Shows detailed information about a model, including relations and required fields. |
-| `GET ENUM_RELATIONS <enum>`                | Displays which tables reference the given enum.                                    |
-| `GET FIELDS <model>`                       | Lists all fields in the specified model.                                           |
-| `GET FIELDS <field, field2> IN <model>`    | Filters and displays specific fields within a model.                               |
-| `GET RELATIONS <model, model2> (depth?=1)` | Lists relations between models, supporting depth levels.                           |
-| `GET ENUMS (raw?)`                         | Lists all enums, optionally in raw format.                                         |
-| `GET ENUMS <enum, enum>`                   | Lists specific enums.                                                              |
-| `GET MODELS_LIST`                          | Displays all model names in a sorted table.                                        |
-| `PRINT`                                    | Prints the entire Prisma schema in a colorized format.                             |
-| `VALIDATE`                                 | Validates the schema for correctness.                                              |
+## **Query Commands (`GET`, `PRINT`, `VALIDATE`)**
 
-### **Mutation Commands (`ADD`, `DELETE`, `UPDATE`)**
+| Command                                        | Description                                                                        |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------- |
+| **`GET MODELS`**                               | Displays all models with syntax highlighting.                                      |
+| **`GET MODEL <name>`**                         | Shows detailed information about a model, including relations and required fields. |
+| **`GET ENUM_RELATIONS <enum>`**                | Displays which tables reference the given enum.                                    |
+| **`GET FIELDS <model>`**                       | Lists all fields in the specified model.                                           |
+| **`GET FIELDS <field, field2> IN <model>`**    | Filters and displays specific fields within a model.                               |
+| **`GET RELATIONS <model, model2> (depth?=1)`** | Lists relations between models, supporting depth levels.                           |
+| **`GET ENUMS (raw?)`**                         | Lists all enums, optionally in raw format.                                         |
+| **`GET ENUMS <enum, enum>`**                   | Lists specific enums.                                                              |
+| **`GET MODELS_LIST`**                          | Displays all model names in a sorted table.                                        |
+| **`PRINT`**                                    | Prints the entire Prisma schema in a colorized format.                             |
+| **`VALIDATE`**                                 | Validates the schema for correctness.                                              |
 
-| Command                                           | Description                                                             |
-| ------------------------------------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------- |
-| `ADD MODEL <name> ({...})`                        | Creates a new model with fields defined in a Prisma block.              |
-| `ADD FIELD <name> TO <model> ({String})`          | Adds a new field to a model, requiring a valid Prisma field definition. |
-| `ADD RELATION <modelA> TO <modelB> (...options)`  | Establishes a relation between two models.                              |
-| `ADD ENUM <name> ({A                              | B                                                                       | C})`                                                                 | Creates an enum with specified options. |
-| `DELETE MODEL <name>`                             | Deletes a model from the schema.                                        |
-| `DELETE FIELD <name> IN <model>`                  | Removes a field from a model.                                           |
-| `DELETE RELATION <modelA>, <modelB> (...options)` | Removes relations between models based on specified conditions.         |
-| `DELETE ENUM <name>`                              | Deletes an enum.                                                        |
-| `UPDATE FIELD <name> IN <model> ({...})`          | Recreates a field in a model (use with caution).                        |
-| `UPDATE ENUM <name> ({A                           | B})(replace?)`                                                          | Updates an enum, either appending values or replacing it completely. |
+---
+
+## **Mutation Commands (`ADD`, `DELETE`, `UPDATE`)**
+
+| Command                                                                                                                        | Description                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| **`ADD MODEL <name> ({...})`**                                                                                                 | Creates a new model with fields defined in a Prisma block.              |
+| **`ADD FIELD <name> TO <model> ({String})`**                                                                                   | Adds a new field to a model, requiring a valid Prisma field definition. |
+| **`ADD RELATION <modelA> TO <modelB> (type=1:1, pivotTable=true, fkHolder=<modelA>, required=true, relationName=CustomName)`** | Establishes a relation between two models with customizable options.    |
+| **`ADD ENUM <name> ({A, B, C})`**                                                                                              | Creates an enum with specified options.                                 |
+| **`DELETE MODEL <name>`**                                                                                                      | Deletes a model from the schema.                                        |
+| **`DELETE FIELD <name> IN <model>`**                                                                                           | Removes a field from a model.                                           |
+| **`DELETE RELATION <modelA>, <modelB> (fieldA=id, fieldB=refId, relationName=CustomName)`**                                    | Removes relations between models based on specified conditions.         |
+| **`DELETE ENUM <name>`**                                                                                                       | Deletes an enum.                                                        |
+| **`UPDATE FIELD <name> IN <model> ({...})`**                                                                                   | Recreates a field in a model (use with caution).                        |
+| **`UPDATE ENUM <name> ({A, B})(replace=true)`**                                                                                | Updates an enum, either appending values or replacing it completely.    |
+
+---
 
 ## Execution Flow
 
@@ -96,6 +100,8 @@ Arguments in PrismaQL follow specific formats:
    - **Dry Run** – Ensures changes do not break the schema.
    - **Commit & Apply** – Saves changes after confirmation.
 6. A backup of the previous schema version is stored in `.prisma/backups`.
+
+---
 
 ## Conclusion
 
