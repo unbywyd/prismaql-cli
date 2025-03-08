@@ -1,8 +1,5 @@
 #!/usr/bin/env node
 import loadQueryRenderManager from './bin.js';
-import { readFileSync } from 'fs';
-import { resolve } from 'path';
-const { version } = JSON.parse(readFileSync(resolve(process.cwd(), 'package.json'), 'utf-8'));
 function showHelp() {
     console.log(`
 Usage: prismaql <command> [--dry]
@@ -24,7 +21,7 @@ async function main() {
         process.exit(0);
     }
     if (args.includes('--version')) {
-        console.log(`PrismaQL CLI v${version}`);
+        console.log(`PrismaQL CLI alpha`);
         process.exit(0);
     }
     const command = args.find(arg => !arg.startsWith('--'));
