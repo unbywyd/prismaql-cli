@@ -88,7 +88,7 @@ ${r.result}`);
         const isValid = import_prismaql.prismaQlParser.isValid(sourceCommand);
         if (isValid instanceof Error) {
           console.log(import_chalk.default.redBright(`Invalid command: ${isValid.message}`));
-          console.log(import_chalk.default.yellowBright("Example command pattern: ACTION COMMAND ...args (options) ({prismaBlock})"));
+          console.log(import_chalk.default.yellowBright("Example command pattern: ACTION COMMAND ...args ({prismaBlock}) (options);"));
           return;
         } else {
           console.log(import_chalk.default.greenBright("Command is valid"));

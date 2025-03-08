@@ -11,19 +11,19 @@
 
 Key advantages:
 
-- **Structured DSL** – Easy-to-read and consistent command format.
-- **Safe & Reversible Changes** – Dry-run mode, automatic backups, and validation steps.
-- **Flexible** – Supports custom logic via the underlying PrismaQL Core engine.
-- **Multiple Modes** – Combine multiple commands in a single line; they will be executed sequentially and applied in order.
-
-> **Alpha Notice:** This project is under active development. Expect changes to APIs and features.
+- **Declarative Command Syntax** – Intuitive and human-readable commands like `GET MODELS`, `ADD FIELD`, and more.
+- **Query & Mutation Separation** – Clear distinction between read-only operations (`GET`, `PRINT`, `VALIDATE`) and modifying ones (`ADD`, `DELETE`, `UPDATE`).
+- **Configurable Workflow** – Easily extend and integrate custom handlers for queries and mutations.
+- **Safe & Reversible Edits** – Built-in validation with automatic backups to ensure data integrity.
+- **Flexible Relation Management** – Supports **1:1, 1:M, and M:N** relationships, including **pivot table-based relations**. Allows both **direct** and **indirect** (foreign-key-only) associations, with the ability to choose the **FK holder side** for precise schema control.
 
 ## How It Works
 
 1. **Parsing DSL** – Raw text commands (e.g. `GET MODEL User;`) go through the **PrismaQlDslParser**, producing a structured object.
-2. **Validation & Execution** – Queries simply inspect the schema; mutations modify it, ensuring AST-level integrity.
-3. **Backup & Commit** – Each mutation can undergo a dry run, then commit changes. Old versions are stored in `.prisma/backups`.
-4. **Extensible Handlers** – You can register **query** or **mutation** handlers to shape how commands are processed.
+2. **Chained Commands** – You can chain multiple commands in a single line, separated by semicolons, and they will be executed sequentially.
+3. **Validation & Execution** – Queries simply inspect the schema; mutations modify it, ensuring AST-level integrity.
+4. **Backup & Save** – Each mutation can undergo a dry run, then save changes. Old versions are stored in `.prisma/backups`.
+5. **Extensible Handlers** – You can register **query** or **mutation** handlers to shape how commands are processed.
 
 ### Example Commands
 
@@ -55,7 +55,7 @@ This will give you the `prismaql` command in your terminal.
 A command typically follows this structure:
 
 ```
-ACTION COMMAND ...ARGS ({PRISMA_BLOCK}) (OPTIONS)
+ACTION COMMAND ...args ({PRISMA_BLOCK}) (OPTIONS);
 ```
 
 - **ACTION** – One of `GET`, `PRINT`, `VALIDATE`, `ADD`, `DELETE`, `UPDATE`.
@@ -353,7 +353,6 @@ By default, whenever the CLI applies a **mutation**, it stores the previous sche
 
 ## Project Status
 
-- **Alpha Version** – Some features may be incomplete or subject to change.
 - **Contributions Welcome** – Please report issues and PRs on [GitHub](https://github.com/unbywyd/prismaql-cli).
 
 ---

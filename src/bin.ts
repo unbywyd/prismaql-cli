@@ -50,7 +50,7 @@ const loadQueryRenderManager = async (options: Record<string, boolean | string |
         const isValid = prismaQlParser.isValid(sourceCommand);
         if (isValid instanceof Error) {
             console.log(chalk.redBright(`Invalid command: ${isValid.message}`));
-            console.log(chalk.yellowBright("Example command pattern: ACTION COMMAND ...args (options) ({prismaBlock})"));
+            console.log(chalk.yellowBright("Example command pattern: ACTION COMMAND ...args ({prismaBlock}) (options);"));
             return;
         } else {
             console.log(chalk.greenBright("Command is valid"));
