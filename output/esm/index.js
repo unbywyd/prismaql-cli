@@ -37,8 +37,8 @@ var loadQueryRenderManager = async (options = {}) => {
       }).then((res) => {
         res.forEach((r, i) => {
           if (r?.result) {
-            console.log(chalk.greenBright(`Command ${i + 1} result: 
-${r.result}`));
+            console.log(chalk.greenBright(`Command ${i + 1} result:`), `
+${r.result}`);
           } else {
             console.error(`Command ${i + 1} error: ${r.error}`);
           }
@@ -62,7 +62,7 @@ ${r.result}`));
       confirm
     }).then((res) => {
       if (res?.response?.result) {
-        console.log(chalk.greenBright(res.response.result));
+        console.log(res.response.result);
       } else {
         console.error(`Error: ${res.response.error}`);
       }

@@ -74,8 +74,8 @@ var init_bin = __esm({
           }).then((res) => {
             res.forEach((r, i) => {
               if (r?.result) {
-                console.log(import_chalk.default.greenBright(`Command ${i + 1} result: 
-${r.result}`));
+                console.log(import_chalk.default.greenBright(`Command ${i + 1} result:`), `
+${r.result}`);
               } else {
                 console.error(`Command ${i + 1} error: ${r.error}`);
               }
@@ -99,7 +99,7 @@ ${r.result}`));
           confirm
         }).then((res) => {
           if (res?.response?.result) {
-            console.log(import_chalk.default.greenBright(res.response.result));
+            console.log(res.response.result);
           } else {
             console.error(`Error: ${res.response.error}`);
           }

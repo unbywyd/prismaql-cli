@@ -37,7 +37,7 @@ const loadQueryRenderManager = async (options: Record<string, boolean | string |
             }).then(res => {
                 res.forEach((r, i) => {
                     if (r?.result) {
-                        console.log(chalk.greenBright(`Command ${i + 1} result: \n${r.result}`));
+                        console.log(chalk.greenBright(`Command ${i + 1} result:`), `\n${r.result}`);
                     } else {
                         console.error(`Command ${i + 1} error: ${r.error}`);
                     }
@@ -61,7 +61,7 @@ const loadQueryRenderManager = async (options: Record<string, boolean | string |
             confirm: confirm
         }).then(res => {
             if (res?.response?.result) {
-                console.log(chalk.greenBright(res.response.result));
+                console.log(res.response.result);
             } else {
                 console.error(`Error: ${res.response.error}`);
             }

@@ -14,8 +14,27 @@ Key advantages:
 - **Structured DSL** – Easy-to-read and consistent command format.
 - **Safe & Reversible Changes** – Dry-run mode, automatic backups, and validation steps.
 - **Flexible** – Supports custom logic via the underlying PrismaQL Core engine.
+- **Multiple Modes** – Combine multiple commands in a single line; they will be executed sequentially and applied in order.
 
 > **Alpha Notice:** This project is under active development. Expect changes to APIs and features.
+
+## How It Works
+
+1. **Parsing DSL** – Raw text commands (e.g. `GET MODEL User;`) go through the **PrismaQlDslParser**, producing a structured object.
+2. **Validation & Execution** – Queries simply inspect the schema; mutations modify it, ensuring AST-level integrity.
+3. **Backup & Commit** – Each mutation can undergo a dry run, then commit changes. Old versions are stored in `.prisma/backups`.
+4. **Extensible Handlers** – You can register **query** or **mutation** handlers to shape how commands are processed.
+
+### Example Commands
+
+```bash
+prismaql "ADD MODEL User ({name String}); ADD MODEL Profile ({age Int})(empty); ADD RELATION User AND Profile (type=1:M, fkHolder=Profile); GET RELATIONS Profile;" --dry
+```
+
+#### 📸 Result
+
+![Prismalux Syntax Highlighting](https://raw.githubusercontent.com/unbywyd/prismaql/master/assets/1.png)
+![Prismalux Syntax Highlighting](https://raw.githubusercontent.com/unbywyd/prismaql/master/assets/2.png)
 
 ---
 
@@ -28,6 +47,22 @@ npm install -g prismaql-cli
 ```
 
 This will give you the `prismaql` command in your terminal.
+
+---
+
+## Command Pattern
+
+A command typically follows this structure:
+
+```
+ACTION COMMAND ...ARGS ({PRISMA_BLOCK}) (OPTIONS)
+```
+
+- **ACTION** – One of `GET`, `PRINT`, `VALIDATE`, `ADD`, `DELETE`, `UPDATE`.
+- **COMMAND** – A specific target (e.g., `MODEL`, `RELATION`, `ENUM`, `GENERATORS`, `GENERATOR`).
+- **ARGS** – Varies by command (e.g., `User`, `User,Post`, `fieldName`).
+- **PRISMA_BLOCK** – An optional Prisma snippet in `({ ... })` format, used for model/field definitions.
+- **OPTIONS** – Additional parameters in `(key=value, flag, ...)` format.
 
 ---
 
@@ -62,7 +97,7 @@ PrismaQL CLI supports the same **Query** and **Mutation** commands as the core l
 ### 1. Query Commands
 
 - `GET MODELS` – List all models with highlighting.
-- `GET MODEL <name>` – Show details for a specific model (fields, relations, etc.).
+- `GET MODEL <name> (empty?)` – Show details for a specific model (fields, relations, etc.).
 - `GET ENUM_RELATIONS <enum>` – Show references to a specific enum across models.
 - `GET FIELDS <model>` – List fields for a model.
 - `GET FIELDS <field,field2> IN <model>` – Show specific fields.
@@ -70,13 +105,15 @@ PrismaQL CLI supports the same **Query** and **Mutation** commands as the core l
 - `GET ENUMS (raw?)` / `GET ENUMS <enum, ...>` – Show one or more enums.
 - `GET MODELS_LIST` – Display a sorted list of all models.
 - `PRINT` – Print the entire schema in color.
+- `GET DB` – Show the current database connection.
+- `GET GENERATORS` – List all generators.
 - `VALIDATE` – Validate the schema.
 
 ### 2. Mutation Commands
 
 - `ADD MODEL <name> ({...})` – Create a new model with a Prisma block.
 - `ADD FIELD <name> TO <model> ({String})` – Add a field to a model.
-- `ADD RELATION <modelA> TO <modelB> (type=1:M, ...)` – Create a relation between two models.
+- `ADD RELATION <modelA> AND <modelB> (type=1:M, ...)` – Create a relation between two models.
 - `ADD ENUM <name> ({A|B|C})` – Create a new enum.
 - `DELETE MODEL <name>` – Delete a model.
 - `DELETE FIELD <name> IN <model>` – Remove a field.
@@ -84,11 +121,14 @@ PrismaQL CLI supports the same **Query** and **Mutation** commands as the core l
 - `DELETE ENUM <name>` – Delete an enum.
 - `UPDATE FIELD <name> IN <model> ({...})` – Recreate a field (caution).
 - `UPDATE ENUM <name> ({A|B}) (replace=?)` – Append or replace enum values.
+- `UPDATE DB (url='...', provider='...')` – Update the database connection.
+- `UPDATE GENERATOR <name> ({...}) (provider='...', output='...')` – Update a generator.
+- `ADD GENERATOR <name> ({...})` – Add a new generator.
+- `DELETE GENERATOR <name>` – Remove a generator.
 
 Each command follows the **`ACTION COMMAND ARGS (PRISMA_BLOCK) (OPTIONS)`** pattern.
 
 ---
-
 
 ## Query Commands (READ-ONLY)
 
@@ -122,6 +162,16 @@ Each command follows the **`ACTION COMMAND ARGS (PRISMA_BLOCK) (OPTIONS)`** patt
 - **Description**: Shows relations among specified models. Accepts an optional depth.
 - **Usage**: `GET RELATIONS User, Post (depth=2);`
 
+### `GET DB`
+
+- **Description**: Outputs the provider's current database connection and url.
+- **Usage**: `GET DB;`
+
+### `GET GENERATORS`
+
+- **Description**: Lists all generators in the schema.
+- **Usage**: `GET GENERATORS;`
+
 ### `GET ENUMS (raw?)`
 
 - **Description**: Lists all enums in a formatted or raw representation.
@@ -154,14 +204,15 @@ Each command follows the **`ACTION COMMAND ARGS (PRISMA_BLOCK) (OPTIONS)`** patt
 ### `ADD MODEL <name> ({...})`
 
 - **Description**: Creates a new model. Requires two parameters: `name` and a **Prisma block** with fields.
-- **Example**: `ADD MODEL User ({ id Int @id @default(autoincrement()), name String });`
+- **Example**: `ADD MODEL User ({ id Int @id @default(autoincrement()) | name String });`
+  - **`empty`** – If specified, the model is created without fields (creadtAt, updatedAt, deletedAt are added by default).
 
 ### `ADD FIELD <name> TO <model> ({String})`
 
 - **Description**: Adds a new field to a model. Requires the field name, the model name, and a Prisma block describing field attributes.
 - **Example**: `ADD FIELD email TO User ({String @unique});`
 
-### `ADD RELATION <modelA> TO <modelB> (...options)`
+### `ADD RELATION <modelA> AND <modelB> (...options)`
 
 - **Description**: Creates a relation between two models. Supports multiple options:
   - **`type`** (required): Defines the relation type: `"1:1" | "1:M" | "M:N"`.
@@ -226,6 +277,41 @@ Each command follows the **`ACTION COMMAND ARGS (PRISMA_BLOCK) (OPTIONS)`** patt
 - **Example**:
   ```
   UPDATE ENUM Role ({ADMIN|SUPERADMIN}) (replace=true);
+  ```
+
+### `UPDATE DB (url='...', provider='...')`
+
+- **Description**: Updates the database connection URL and provider.
+- **Example**:
+  ```
+  UPDATE DB (
+      url='mysql://user:password@localhost:3306/db',
+      provider='mysql'
+  );
+  ```
+
+### `UPDATE GENERATOR <name> ({...})(provider='...', output='...')`
+
+- **Description**: Updates a generator with new options.
+- **Example**:
+  ```
+  UPDATE GENERATOR client ({provider='prisma-client-js', output='@prisma/client'});
+  ```
+
+### `ADD GENERATOR <name> ({...})`
+
+- **Description**: Adds a new generator to the schema.
+- **Example**:
+  ```
+  ADD GENERATOR client ({provider='', output=''});
+  ```
+
+### `DELETE GENERATOR <name>`
+
+- **Description**: Removes a generator from the schema.
+- **Example**:
+  ```
+  DELETE GENERATOR client;
   ```
 
 ---
