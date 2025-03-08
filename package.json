@@ -20,7 +20,7 @@
   "module": "./output/esm/index.js",
   "types": "./output/esm/index.d.ts",
   "bin": {
-    "prismaql": "./output/index.js"
+    "prismaql": "./output/esm/index.js"
   },
   "author": {
     "name": "Artyom Gorlovetskiy",
