@@ -13,14 +13,14 @@
     "clean": "rm -rf output"
   },
   "exports": {
-    "import": "./output/esm/index.js",
-    "require": "./output/cjs/index.cjs"
+    "import": "./output/index.js",
+    "require": "./output/index.cjs"
   },
-  "main": "./output/cjs/index.cjs",
-  "module": "./output/esm/index.js",
-  "types": "./output/esm/index.d.ts",
+  "main": "./output/index.cjs",
+  "module": "./output/index.js",
+  "types": "./output/index.d.ts",
   "bin": {
-    "prismaql": "./output/esm/index.js"
+    "prismaql": "./output/index.js"
   },
   "author": {
     "name": "Artyom Gorlovetskiy",
@@ -45,7 +45,6 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.10",
-    "tsup": "^8.4.0",
     "typescript": "^5.7.2"
   },
   "repository": {
