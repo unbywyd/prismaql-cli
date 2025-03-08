@@ -2,7 +2,7 @@ import { defineConfig } from "tsup";
 
 export default defineConfig([
     {
-        entry: ["src/*.ts"],
+        entry: ["src/**/*.ts"],
         format: ["esm"],
         outDir: "output/esm",
         sourcemap: true,
@@ -15,13 +15,14 @@ export default defineConfig([
     },
 
     {
-        entry: ["src/*.cts"],
+        entry: ["src/**/*.cts"],
         format: ["cjs"],
         outDir: "output/cjs",
         sourcemap: true,
         splitting: false,
         clean: false,
-        bundle: false,
+        bundle: true,
+        external: ["fs", "path", "boxen", "chalk", "inquirer", "prismalux", "prismaql"],
         target: "es2022",
         outExtension: () => ({ js: ".cjs" }),
     }
