@@ -1,7 +1,7 @@
 {
   "name": "prismaql-cli",
   "description": "CLI tool for managing and editing Prisma schema files using PrismaQL DSL.",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": false,
   "type": "module",
   "publishConfig": {
@@ -12,11 +12,7 @@
     "dev": "tsc --watch",
     "clean": "rm -rf output"
   },
-  "exports": {
-    "import": "./output/index.js",
-    "require": "./output/index.cjs"
-  },
-  "main": "./output/index.cjs",
+  "main": "./output/index.js",
   "module": "./output/index.js",
   "types": "./output/index.d.ts",
   "bin": {
